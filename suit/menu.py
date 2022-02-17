@@ -1,8 +1,10 @@
 from copy import deepcopy
-from django.utils.translation import ugettext_lazy as _
+
+from django.utils.translation import gettext_lazy as _
 
 
 class ChildItem(object):
+
     def __init__(self, label=None, model=None, url=None, target_blank=False, permissions=None):
         self.label = label
         self.model = model
@@ -21,8 +23,17 @@ class ChildItem(object):
 
 
 class ParentItem(ChildItem):
-    def __init__(self, label=None, app=None, url=None, target_blank=False, permissions=None,
-                 children=None, align_right=False, use_first_child_url=True, icon=None):
+
+    def __init__(self,
+                 label=None,
+                 app=None,
+                 url=None,
+                 target_blank=False,
+                 permissions=None,
+                 children=None,
+                 align_right=False,
+                 use_first_child_url=True,
+                 icon=None):
         super(ParentItem, self).__init__(label, None, url, target_blank, permissions)
         self.user_children = children or []
         self.children = []
@@ -36,6 +47,7 @@ class ParentItem(ChildItem):
 
 
 class MenuManager(object):
+
     def __init__(self, available_apps, context, request):
         from .config import get_config_instance, get_current_app
 
@@ -65,8 +77,7 @@ class MenuManager(object):
             if self.suit_config.menu_handler:
                 if not callable(self.suit_config.menu_handler):
                     raise TypeError('Django Suit "menu_handler" must callable')
-                self.menu_items = self.suit_config.menu_handler(
-                    self.menu_items, self.request, self.context)
+                self.menu_items = self.suit_config.menu_handler(self.menu_items, self.request, self.context)
 
         return self.menu_items
 
@@ -170,7 +181,7 @@ class MenuManager(object):
         """
         :type native_model: dict
         """
-        child_item = ChildItem(native_model['name'],  model=native_model.get('model'), url=native_model['admin_url'])
+        child_item = ChildItem(native_model['name'], model=native_model.get('model'), url=native_model['admin_url'])
         return child_item
 
     def handle_parent_menu(self, parent_item, native_app):
@@ -221,9 +232,9 @@ class MenuManager(object):
         if '/' in menu_item.url:
             return menu_item
         try:
-            from django.urls import reverse, NoReverseMatch
+            from django.urls import NoReverseMatch, reverse
         except:
-            from django.core.urlresolvers import reverse, NoReverseMatch
+            from django.core.urlresolvers import NoReverseMatch, reverse
         try:
             menu_item.url = reverse(menu_item.url, current_app=self.current_app)
             menu_item._url_name = menu_item.url
@@ -263,7 +274,7 @@ class MenuManager(object):
             return True
 
     def user_has_permission(self, perms):
-        perms = perms if isinstance(perms, (list, tuple)) else (perms,)
+        perms = perms if isinstance(perms, (list, tuple)) else (perms, )
         return self.request.user.has_perms(perms)
 
     def mark_active(self, menu_items):
